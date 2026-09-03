@@ -1,17 +1,17 @@
-# TannrÃ©ttingar â Teinar
+# Tannréttingar – Teinar
 
 URL: https://teinar.is/tannrettingar/
 
-# TannrÃ©ttingar â Teinar
+# Tannréttingar – Teinar
 URL: https://teinar.is/tannrettingar/
 
-TannrÃ©ttingar â Teinar
+Tannréttingar – Teinar
 
-# TannrÃ©ttingar
+# Tannréttingar
 
-| Fyrsta koma VandamÃ¡l NÃ½jungar StoÃ°tÃ¦ki Fyrsta hjÃ¡lp SkarÃ° Ã­ vÃ¶r og gÃ³m |
+| Fyrsta koma Vandamál Nýjungar Stoðtæki Fyrsta hjálp Skarð í vör og góm |
 | --- |
 
-Grein eftir GÃ­sla Ã­ tÃ­mariti AmerÃ­ska tannrÃ©ttingarfÃ©lagsins. Article published by GÃ­sli in the American Association Orthodontics journal: AJ0-D0 (American Journal of Orthodontic and Dentofacial Orthopedics).
+Grein eftir Gísla í tímariti Ameríska tannréttingarfélagsins. Article published by Gísli in the American Association Orthodontics journal: AJ0-D0 (American Journal of Orthodontic and Dentofacial Orthopedics).
 
-TannlÃ¦knastofa GÃ­sla VilhjÃ¡lmssonar | Laugavegi 163 | 105 ReykjavÃ­k | SÃ­mi: 562 9944 | teinar@teinar.is
+Tannlæknastofa Gísla Vilhjálmssonar | Laugavegi 163 | 105 Reykjavík | Sími: 562 9944 | teinar@teinar.is

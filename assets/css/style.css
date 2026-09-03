@@ -215,3 +215,71 @@ th { background: var(--teal-soft); color: var(--teal-dark); }
   .nav { width: 100%; }
   .nav a { flex: 1 1 auto; text-align: center; padding: 8px 6px; }
 }
+
+/* ── Accessibility ──────────────────────────────────── */
+
+/* skip link — visible only on keyboard focus */
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 100;
+  background: var(--teal-dark);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 0 0 10px 10px;
+  font-weight: 600;
+  transition: top 0.15s ease;
+}
+.skip-link:focus { top: 0; text-decoration: none; }
+
+/* visible focus indicator */
+:focus-visible {
+  outline: 3px solid var(--teal-dark);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.hero a:focus-visible,
+.site-header .lang a.active:focus-visible,
+.nav a.active:focus-visible,
+.site-footer a:focus-visible,
+.btn:focus-visible {
+  outline-color: #fff;
+}
+
+/* keep in-page anchor targets clear of the sticky header */
+:target,
+h1, h2, h3, h4 { scroll-margin-top: 90px; }
+
+/* page title shares the .wrap gutter with the body */
+.page-head { padding-top: 36px; }
+.page-head h1 { margin-bottom: 0; }
+.page-head + .wrap.section,
+.page-head + .section { padding-top: 20px; }
+
+/* staff card placeholder (used until a real portrait is supplied) */
+.staff-photo-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1px dashed var(--teal);
+  background: var(--teal-soft);
+  color: var(--teal-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.9rem;
+  letter-spacing: 0.02em;
+}
+
+/* respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

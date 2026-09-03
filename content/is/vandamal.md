@@ -1,46 +1,46 @@
-# VandamÃ¡l â Teinar
+# Vandamál – Teinar
 
 URL: https://teinar.is/vandamal/
 
-# VandamÃ¡l â Teinar
+# Vandamál – Teinar
 URL: https://teinar.is/vandamal/
 
-VandamÃ¡l â Teinar
+Vandamál – Teinar
 
-# VandamÃ¡l
+# Vandamál
 
 Undirbit
 
-Framtennur neÃ°ri gÃ³ms sitja framar en framtennur efri gÃ³ms (skÃºffubit), oft fylgir Ã¾essu biti krossbit (sjÃ¡ aÃ° neÃ°an).
+Framtennur neðri góms sitja framar en framtennur efri góms (skúffubit), oft fylgir þessu biti krossbit (sjá að neðan).
 
-Nokkar Ã¡stÃ¦Ã°ur: Framtennur efri gÃ³ms vÃ­sa inn Ã¡ viÃ°. Framtennur neÃ°ri gÃ³ms vÃ­sa fram Ã¡ viÃ°. Efri kjÃ¡lki stuttur og/eÃ°a neÃ°ri kjÃ¡lki of framstÃ¦Ã°ur.
+Nokkar ástæður: Framtennur efri góms vísa inn á við. Framtennur neðri góms vísa fram á við. Efri kjálki stuttur og/eða neðri kjálki of framstæður.
 
 ---
 
 Yfirbit
 
-Ãegar efri gÃ³ms framtennur eru fram fyrir neÃ°ri gÃ³ms framtennur. NeÃ°ri gÃ³ms framtennur bÃ­ta Ã¾Ã¡ gjarnan upp Ã­ gÃ³minn-ganga upp af Ã¾vÃ­ aÃ° Ã¾Ã¦r hitta ekki Ã¡ mÃ³tstÃ¦Ã°ar efri framtennur. DjÃºpa bitiÃ° getur skaÃ°aÃ° tannfestuna Ã¡ bakhliÃ° efri tanna.
+Þegar efri góms framtennur eru fram fyrir neðri góms framtennur. Neðri góms framtennur bíta þá gjarnan upp í góminn-ganga upp af því að þær hitta ekki á mótstæðar efri framtennur. Djúpa bitið getur skaðað tannfestuna á bakhlið efri tanna.
 
 ---
 
 Krossbit
 
-Efri gÃ³ms jaxlar sitja innar er neÃ°ri gÃ³ms jaxlar.ÃstÃ¦Ã°a krossbits er oftast vanvÃ¶xtur efri kjÃ¡lka Ã¡ Ã¾verveginn, Ã¾annig aÃ° vÃ­dd efri kjÃ¡lka samrÃ¦mist ekki vÃ­dd neÃ°ri kjÃ¡lka.
+Efri góms jaxlar sitja innar er neðri góms jaxlar.Ástæða krossbits er oftast vanvöxtur efri kjálka á þverveginn, þannig að vídd efri kjálka samræmist ekki vídd neðri kjálka.
 
 ---
 
-Ãrengsli
+Þrengsli
 
-Tennur hafa ekki nÃ³g plÃ¡ss til aÃ° komast Ã¡ sinn staÃ°. ÃstÃ¦Ã°a Ã¾rengsla er oftast Ã³samrÃ¦mi Ã­ ummÃ¡li kjÃ¡lka miÃ°aÃ° viÃ° breidd tanna. Tennur sem eru snÃºnar og skakkar taka minna plÃ¡ss en Ã¾Ã¦r sem sitja hliÃ° viÃ° hliÃ°.
-
----
-
-OpiÃ° bit
-
-Ãegar tennur efri gÃ³ms og neÃ°ri gÃ³ms snertast ekki Ã­ biti.ÃtÃ¦Ã°an er oftast nÃ¦r vegna Ã¾ess aÃ° tungan fer inn Ã¡ milli tannanna (tunguÃ¾rÃ½stingur)
+Tennur hafa ekki nóg pláss til að komast á sinn stað. Ástæða þrengsla er oftast ósamræmi í ummáli kjálka miðað við breidd tanna. Tennur sem eru snúnar og skakkar taka minna pláss en þær sem sitja hlið við hlið.
 
 ---
 
-DjÃºpt bit
+Opið bit
 
-NeÃ°ri gÃ³ms fremtennur bÃ­ta upp Ã­ efri gÃ³m. DjÃºpa bitiÃ° getur skaÃ°aÃ° tannfestuna Ã¡ bakhliÃ° efri tanna.
+Þegar tennur efri góms og neðri góms snertast ekki í biti.Átæðan er oftast nær vegna þess að tungan fer inn á milli tannanna (tunguþrýstingur)
+
+---
+
+Djúpt bit
+
+Neðri góms fremtennur bíta upp í efri góm. Djúpa bitið getur skaðað tannfestuna á bakhlið efri tanna.

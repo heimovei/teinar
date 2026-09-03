@@ -1,22 +1,22 @@
-# GÃ­sli VilhjÃ¡lmsson â Teinar
+# Gísli Vilhjálmsson – Teinar
 
 URL: https://teinar.is/gisli-vilhjalmsson/
 
-# GÃ­sli VilhjÃ¡lmsson â Teinar
+# Gísli Vilhjálmsson – Teinar
 URL: https://teinar.is/gisli-vilhjalmsson/
 
-GÃ­sli VilhjÃ¡lmsson â Teinar
+Gísli Vilhjálmsson – Teinar
 
-# GÃ­sli VilhjÃ¡lmsson
+# Gísli Vilhjálmsson
 
-GÃ­sli VilhjÃ¡lmsson er fÃ¦ddur 13. maÃ­ 1954 Ã­ ReykjavÃ­k.
+Gísli Vilhjálmsson er fæddur 13. maí 1954 í Reykjavík.
 
-Hann lauk stÃºdentsprÃ³fi frÃ¡ M.H. 1974. ÃaÃ°an lÃ¡ leiÃ°in Ã­ TannlÃ¦knadeild HÃ¡skÃ³la Ãslands og lauk hann prÃ³fi (Cand.odont.) Ã¾aÃ°an 1980. GÃ­sli fÃ³r beina leiÃ° Ã­ framhaldsnÃ¡m til BandarÃ­kjanna. LÃ¦rÃ°i tannrÃ©ttingar viÃ° St. Louis University, Department of Orthodontics. Lauk M.Sc. prÃ³fi Ã­ tannrÃ©ttingum Ã¾aÃ°an 1982 og Ã­ lok nÃ¡msins hlaut hann Marshalls-viÃ°urkenningu frÃ¡ St. Louis University of Orthodontic Alumni Association fyrir bestan Ã¡rangur Ã­ tveggja Ã¡ra framhaldsnÃ¡mi Ã­ tannrÃ©ttingum.
+Hann lauk stúdentsprófi frá M.H. 1974. Þaðan lá leiðin í Tannlæknadeild Háskóla Íslands og lauk hann prófi (Cand.odont.) þaðan 1980. Gísli fór beina leið í framhaldsnám til Bandaríkjanna. Lærði tannréttingar við St. Louis University, Department of Orthodontics. Lauk M.Sc. prófi í tannréttingum þaðan 1982 og í lok námsins hlaut hann Marshalls-viðurkenningu frá St. Louis University of Orthodontic Alumni Association fyrir bestan árangur í tveggja ára framhaldsnámi í tannréttingum.
 
-GÃ­sli fÃ©kk tannlÃ¦knaleyfi 27. Ã¡gÃºst 1980. SÃ©rfrÃ¦Ã°irÃ©ttindi Ã­ tannrÃ©ttingum 16. jÃºnÃ­ 1988. GÃ­sli stundar virka endurmenntun og sÃ¦kir reglulega tannrÃ©ttingaÃ¾ing erlendis. Hann hefur Ã¦tÃ­Ã° tekiÃ° Ã¾Ã¡tt Ã­ og uppfyllt endurmenntunarkrÃ¶fu TannlÃ¦knafÃ©lags Ãslands âVEITâ. Jafnframt hefur hann haldiÃ° nokkur erindi Ã¡ Ã¡rsÃ¾ingum TannlÃ¦knafÃ©lagsins um efni tengd tannrÃ©ttingum.
+Gísli fékk tannlæknaleyfi 27. ágúst 1980. Sérfræðiréttindi í tannréttingum 16. júní 1988. Gísli stundar virka endurmenntun og sækir reglulega tannréttingaþing erlendis. Hann hefur ætíð tekið þátt í og uppfyllt endurmenntunarkröfu Tannlæknafélags Íslands “VEIT”. Jafnframt hefur hann haldið nokkur erindi á ársþingum Tannlæknafélagsins um efni tengd tannréttingum.
 
-GÃ­sli er giftur KristÃ­nu JÃ³nsdÃ³ttur og eiga Ã¾au 3 bÃ¶rn. KristÃ­n sÃ©r um bÃ³khald stofunnar og sinnir einnig afleysingum Ã­ mÃ³ttÃ¶ku.
+Gísli er giftur Kristínu Jónsdóttur og eiga þau 3 börn. Kristín sér um bókhald stofunnar og sinnir einnig afleysingum í móttöku.
 
-VeiÃ°i og bÃ­lar eru aÃ°alÃ¡hugamÃ¡l GÃ­sla. Hann og KristÃ­n veiÃ°a mikiÃ° saman Ã¡ sumrin. VeiÃ°ibÃ­llinn sem er Bronco Ã¡rgerÃ° 1979, gengur undir nafninu Skrauti. Hann eyÃ°ilagÃ°ist algjÃ¶rlega Ã­ bÃ­lveltu sumariÃ° 2005. GÃ­sli hefur lokiÃ° viÃ° aÃ° endursmÃ­Ã°a Skrauta Ã­ frÃ­stundum sÃ­num.
+Veiði og bílar eru aðaláhugamál Gísla. Hann og Kristín veiða mikið saman á sumrin. Veiðibíllinn sem er Bronco árgerð 1979, gengur undir nafninu Skrauti. Hann eyðilagðist algjörlega í bílveltu sumarið 2005. Gísli hefur lokið við að endursmíða Skrauta í frístundum sínum.
 
-Bronco 1979 endursmÃ­Ã°aÃ°ur af GÃ­sla. EndursmÃ­Ã°in var gerÃ° algjÃ¶rlega meÃ° âoriginalâ (NOS(new old stock)) Ã­hlutum og tÃ³k um Ã¾aÃ° bil 3000 klukkustundir Ã­ tvÃ¶ Ã¡r. LÃ­mborÃ°ar Ã¡ hliÃ°um eru endurskinsborÃ°ar gerÃ°ir eftir forskrift frÃ¡ upprunalegum borÃ°um (âfree wheeling packageâ frÃ¡ Ford). PrentsmiÃ°ja Ã­ Sarasota Florida framleiddi borÃ°ana meÃ° upprunalegu tÃ¦kninni sem Ford gerÃ°i Ã¡ sÃ­num tÃ­ma (silkiprentun) Ã¾ar sem hver litur er prentaÃ°ur hvern ofan Ã¡ annan en ekki bleksprautuprentun. UndirlagsefniÃ° er gulur dÃºkur frÃ¡ 3M sem er notaÃ°ur almennt Ã­ umferÃ°arskilti. Ãess vegna er endurskin af borÃ°unum Ã¾egar tekin er mynd meÃ° flassi eins og sÃ©st Ã¡ annarri myndinni.
+Bronco 1979 endursmíðaður af Gísla. Endursmíðin var gerð algjörlega með “original” (NOS(new old stock)) íhlutum og tók um það bil 3000 klukkustundir í tvö ár. Límborðar á hliðum eru endurskinsborðar gerðir eftir forskrift frá upprunalegum borðum (“free wheeling package” frá Ford). Prentsmiðja í Sarasota Florida framleiddi borðana með upprunalegu tækninni sem Ford gerði á sínum tíma (silkiprentun) þar sem hver litur er prentaður hvern ofan á annan en ekki bleksprautuprentun. Undirlagsefnið er gulur dúkur frá 3M sem er notaður almennt í umferðarskilti. Þess vegna er endurskin af borðunum þegar tekin er mynd með flassi eins og sést á annarri myndinni.

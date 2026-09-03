@@ -1,16 +1,16 @@
-# TÃ­mapantanir â Teinar
+# Tímapantanir – Teinar
 
 URL: https://teinar.is/timapantanir/
 
-# TÃ­mapantanir â Teinar
+# Tímapantanir – Teinar
 URL: https://teinar.is/timapantanir/
 
-TÃ­mapantanir â Teinar
+Tímapantanir – Teinar
 
-# TÃ­mapantanir
+# Tímapantanir
 
-HÃ¦gt er aÃ° panta tÃ­ma og breyta Ã­ sÃ­ma 562-9944.
+Hægt er að panta tíma og breyta í síma 562-9944.
 
-Stofan er opin mÃ¡nudaga til fÃ¶studagaVetrartÃ­mi (sept-maÃ­): 8.15-16.00SumartÃ­mi (jÃºnÃ­-Ã¡gÃºst): 8.15-16.00 nema Ã¡ fÃ¶studÃ¶gum til 12:00
+Stofan er opin mánudaga til föstudagaVetrartími (sept-maí): 8.15-16.00Sumartími (júní-ágúst): 8.15-16.00 nema á föstudögum til 12:00
 
-Einnig er hÃ¦gt aÃ° senda tÃ¶lvupÃ³st Ã¡ netfangiÃ° teinar@teinar.is
+Einnig er hægt að senda tölvupóst á netfangið teinar@teinar.is
