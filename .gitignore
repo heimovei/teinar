@@ -1,0 +1,18 @@
+# Ritsjár og editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Vélbúnaðargestur (node + pakkastjórar)
+node_modules/
+dist/
+.cache/
+
+# Umhverfisskrár
+.env
+.env.local
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
