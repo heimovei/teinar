@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Generate the Teinar.is static site (Icelandic + English) from structured content."""
-import os, shutil, json, datetime
+import os, shutil, json, datetime, re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(ROOT, "site")
@@ -28,7 +28,23 @@ CONTACT = {
         "emergency_href": "tel:+3548935181",
         "email": "teinar@teinar.is",
     },
+    "pl": {
+        "org": "Gabinet Ortodontyczny Gísli Vilhjálmsson",
+        "tagline": "Specjalistyczny gabinet ortodontyczny",
+        "addr": "Laugavegur 163, 105 Reykjavík, Islandia",
+        "phone": "+354 562 9944",
+        "phone_href": "tel:+3545629944",
+        "emergency": "+354 893 5181",
+        "emergency_href": "tel:+3548935181",
+        "email": "teinar@teinar.is",
+    },
 }
+
+# per-language label for the phone line in the footer
+PHONE_LABEL = {"is": "Sími", "en": "Phone", "pl": "Telefon"}
+NAV_ARIA = {"is": "Aðalvalmynd", "en": "Main menu", "pl": "Menu główne"}
+SKIP_TXT = {"is": "Beint í meginmál", "en": "Skip to content", "pl": "Przejdź do treści"}
+OG_LOCALE = {"is": "is_IS", "en": "en_GB", "pl": "pl_PL"}
 
 def tel(cd):
     """Clickable main phone link built from CONTACT."""
@@ -36,6 +52,35 @@ def tel(cd):
 
 def tel_emergency(cd):
     return f'<a href="{cd["emergency_href"]}">{cd["emergency"]}</a>'
+
+
+def svg_icon(name):
+    """Small, consistent outline icons used as decorative UI elements."""
+    paths = {
+        "tooth": '<path d="M12 3.5c-2.2 0-3.3-1-5.1-.3C4.5 4.1 3.5 6 3.8 8.5c.3 2.2 1.4 3.6 1.8 6.3.5 3.2 1.3 5.7 2.8 5.7 1.4 0 1.4-4.7 3.6-4.7s2.2 4.7 3.6 4.7c1.5 0 2.3-2.5 2.8-5.7.4-2.7 1.5-4.1 1.8-6.3.3-2.5-.7-4.4-3.1-5.3-1.8-.7-2.9.3-5.1.3Z"/>',
+        "heart": '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/>',
+        "sparkles": '<path d="m12 3 1.2 3.2L16.5 7.5l-3.3 1.3L12 12l-1.2-3.2-3.3-1.3 3.3-1.3L12 3Z"/><path d="m18 13 .8 2.2L21 16l-2.2.8L18 19l-.8-2.2L15 16l2.2-.8L18 13ZM6 12l.8 2.2L9 15l-2.2.8L6 18l-.8-2.2L3 15l2.2-.8L6 12Z"/>',
+        "shield": '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',
+        "calendar": '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+        "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+        "phone": '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2Z"/>',
+        "pin": '<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+        "mail": '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+        "alert": '<path d="M10.3 2.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 2.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/>',
+        "food": '<path d="M12 22V8M8 2v4a4 4 0 0 0 8 0V2M5 2v20M2 7h6"/>',
+    }
+    return (f'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" '
+            f'fill="none" stroke="currentColor" stroke-width="1.8" '
+            f'stroke-linecap="round" stroke-linejoin="round">{paths[name]}</svg>')
+
+
+EMOJI_ICONS = {
+    "🦷": "tooth", "💛": "heart", "✨": "sparkles", "🛡️": "shield",
+    "📅": "calendar", "☀️": "sun", "📞": "phone", "📍": "pin",
+    "✉️": "mail", "🚨": "alert", "🍎": "food", "🥕": "food",
+    "🌽": "food", "🧊": "food", "🍬": "food", "🍿": "food",
+    "🐟": "food",
+}
 
 HOURS = {
     "is": [
@@ -47,6 +92,11 @@ HOURS = {
         ("Monday to Friday", ""),
         ("Winter (Sep–May)", "8:15–16:00"),
         ("Summer (Jun–Aug)", "8:15–16:00 (Fridays until 12:00)"),
+    ],
+    "pl": [
+        ("Od poniedziałku do piątku", ""),
+        ("Sezon zimowy (wrzesień–maj)", "8:15–16:00"),
+        ("Sezon letni (czerwiec–sierpień)", "8:15–16:00 (w piątki do 12:00)"),
     ],
 }
 
@@ -67,32 +117,42 @@ NAV = {
         ("Location", "location.html", "location"),
         ("Contact", "contact.html", "contact"),
     ],
+    "pl": [
+        ("Strona główna", "index.html", "index"),
+        ("Ortodoncja", "ortodoncja.html", "ortodoncja"),
+        ("O nas", "o-nas.html", "o-nas"),
+        ("Zespół", "zespol.html", "zespol"),
+        ("Lokalizacja", "lokalizacja.html", "lokalizacja"),
+        ("Kontakt", "kontakt.html", "kontakt"),
+    ],
 }
 
-# is/en page pairs — used for hreflang alternates and the language switcher
+# is/en/pl page triples — used for hreflang alternates and the language switcher
 PAIRS = [
-    ("is/index.html", "en/index.html"),
-    ("is/tannrettingar.html", "en/orthodontics.html"),
-    ("is/um-fyrirtaekid.html", "en/about.html"),
-    ("is/starfsfolk.html", "en/staff.html"),
-    ("is/stadhsetning.html", "en/location.html"),
-    ("is/hafdu-samband.html", "en/contact.html"),
-    ("is/gisli-vilhjalmsson.html", "en/gisli-vilhjalmsson.html"),
-    ("is/fyrsta-skodun.html", "en/first-visit.html"),
-    ("is/skard-i-vor-og-gom.html", "en/cleft-lip-and-palate.html"),
-    ("is/tannrettingar-fyrir-alla.html", "en/orthodontics-for-all.html"),
-    ("is/stodtaeki.html", "en/appliances.html"),
-    ("is/fyrsta-hjalp.html", "en/first-aid.html"),
-    ("is/faeda-sem-skal-fordast.html", "en/food-to-avoid.html"),
-    ("is/sarsauki.html", "en/pain.html"),
-    ("is/sjukratryggingar.html", "en/insurance.html"),
-    ("is/timapantanir.html", "en/booking.html"),
-    ("is/tenglar.html", "en/links.html"),
+    ("is/index.html", "en/index.html", "pl/index.html"),
+    ("is/tannrettingar.html", "en/orthodontics.html", "pl/ortodoncja.html"),
+    ("is/um-fyrirtaekid.html", "en/about.html", "pl/o-nas.html"),
+    ("is/starfsfolk.html", "en/staff.html", "pl/zespol.html"),
+    ("is/stadhsetning.html", "en/location.html", "pl/lokalizacja.html"),
+    ("is/hafdu-samband.html", "en/contact.html", "pl/kontakt.html"),
+    ("is/gisli-vilhjalmsson.html", "en/gisli-vilhjalmsson.html", "pl/gisli-vilhjalmsson.html"),
+    ("is/fyrsta-skodun.html", "en/first-visit.html", "pl/pierwsza-wizyta.html"),
+    ("is/skard-i-vor-og-gom.html", "en/cleft-lip-and-palate.html", "pl/rozszczep-wargi-i-podniebienia.html"),
+    ("is/tannrettingar-fyrir-alla.html", "en/orthodontics-for-all.html", "pl/ortodoncja-dla-wszystkich.html"),
+    ("is/stodtaeki.html", "en/appliances.html", "pl/aparaty-retencyjne.html"),
+    ("is/fyrsta-hjalp.html", "en/first-aid.html", "pl/pierwsza-pomoc.html"),
+    ("is/faeda-sem-skal-fordast.html", "en/food-to-avoid.html", "pl/zywnosc-ktorej-nalezy-unikac.html"),
+    ("is/sarsauki.html", "en/pain.html", "pl/bol.html"),
+    ("is/sjukratryggingar.html", "en/insurance.html", "pl/ubezpieczenie.html"),
+    ("is/timapantanir.html", "en/booking.html", "pl/umawianie-wizyt.html"),
+    ("is/tenglar.html", "en/links.html", "pl/przydatne-linki.html"),
 ]
 PAIR_MAP = {}
-for _is, _en in PAIRS:
-    PAIR_MAP[_is] = (_is, _en)
-    PAIR_MAP[_en] = (_is, _en)
+for _triple in PAIRS:
+    for _p in _triple:
+        PAIR_MAP[_p] = _triple
+
+DEFAULT_ALTS = ("is/index.html", "en/index.html", "pl/index.html")
 
 # per-page meta descriptions (fall back to org — tagline)
 META_DESC = {
@@ -130,6 +190,23 @@ META_DESC = {
     "en/insurance.html": "Icelandic Health Insurance participation in orthodontic treatment and help with applications.",
     "en/booking.html": "Booking appointments at Gísli Vilhjálmsson Orthodontics — phone +354 562 9944 and teinar@teinar.is. Opening hours.",
     "en/links.html": "Useful links — Breið bros, the association for families of children with cleft lip and palate, and Icelandic Health Insurance.",
+    "pl/index.html": "Specjalistyczny gabinet ortodontyczny przy Laugavegur 163 w Reykjavíku. Ortodoncja dzieci i dorosłych, ze szczególnym doświadczeniem w leczeniu rozszczepu wargi i podniebienia.",
+    "pl/ortodoncja.html": "Przegląd leczenia ortodontycznego w gabinecie Gísli Vilhjálmsson — pierwsza wizyta, aparaty retencyjne, leczenie bólu, żywność, ubezpieczenie i więcej.",
+    "pl/o-nas.html": "O gabinecie ortodontycznym Gísli Vilhjálmsson przy Laugavegur 163. Gabinet zajmuje się wyłącznie ortodoncją od 1986 roku.",
+    "pl/zespol.html": "Zespół gabinetu Gísli Vilhjálmsson — specjalista ortodonta, asystentki ortodontyczne i technik dentystyczny.",
+    "pl/lokalizacja.html": "Gabinet mieści się przy Laugavegur 163, 105 Reykjavík. Osobne wejście od strony Katrínartún, na 2. piętro.",
+    "pl/kontakt.html": "Kontakt z gabinetem Gísli Vilhjálmsson — telefon +354 562 9944, teinar@teinar.is, Laugavegur 163, Reykjavík.",
+    "pl/gisli-vilhjalmsson.html": "Gísli Vilhjálmsson, lekarz dentysta i specjalista ortodonta. Wykształcenie, kariera i uprawnienia specjalisty.",
+    "pl/pierwsza-wizyta.html": "Kiedy przyprowadzić dziecko na pierwszą wizytę u specjalisty ortodonty i jak rozpoczyna się leczenie.",
+    "pl/rozszczep-wargi-i-podniebienia.html": "Ortodoncja u dzieci z rozszczepem wargi i podniebienia — ścieżka leczenia od wczesnego wieku aż do zakończenia wymiany uzębienia i wzrostu.",
+    "pl/ortodoncja-dla-wszystkich.html": "Broszura „Droga do pięknego uśmiechu” o przygotowaniu do leczenia ortodontycznego, samym leczeniu i stosowanych aparatach.",
+    "pl/aparaty-retencyjne.html": "Aparaty retencyjne po leczeniu ortodontycznym — retainer górny i dolny drut retencyjny utrzymujące efekt leczenia.",
+    "pl/pierwsza-pomoc.html": "Pierwsza pomoc i pomoc w nagłych przypadkach dotyczących aparatów ortodontycznych poza godzinami otwarcia.",
+    "pl/zywnosc-ktorej-nalezy-unikac.html": "Jakiej żywności unikać przy aparacie stałym — wszystko, co twarde i ciągnące się, może uszkodzić aparat.",
+    "pl/bol.html": "Leczenie bólu podczas leczenia ortodontycznego — wskazówki dotyczące ibuprofenu i paracetamolu oraz przykładowe dawki dla dzieci.",
+    "pl/ubezpieczenie.html": "Udział Islandzkiego Ubezpieczenia Zdrowotnego w leczeniu ortodontycznym i pomoc przy składaniu wniosków.",
+    "pl/umawianie-wizyt.html": "Umawianie wizyt w gabinecie Gísli Vilhjálmsson — telefon +354 562 9944 i teinar@teinar.is. Godziny otwarcia.",
+    "pl/przydatne-linki.html": "Przydatne linki — Breið bros, stowarzyszenie rodzin dzieci z rozszczepem wargi i podniebienia, oraz Islandzkie Ubezpieczenie Zdrowotne.",
 }
 
 
@@ -147,6 +224,7 @@ def json_ld(lang, url):
         "name": c["org"],
         "description": c["tagline"],
         "url": url,
+        "inLanguage": lang,
         "telephone": "+354 562 9944",
         "email": c["email"],
         "medicalSpecialty": "Orthodontic",
@@ -176,10 +254,21 @@ def render_header(lang, active, asset, path):
         cls = ' class="active"' if key == active else ""
         items.append(f'<a href="{href}"{cls}>{label}</a>')
     nav_html = "\n      ".join(items)
-    # language switcher points at the equivalent page in the other language
-    is_path, en_path = PAIR_MAP.get(path, ("is/index.html", "en/index.html"))
-    is_href = rel_to(lang, is_path)
-    en_href = rel_to(lang, en_path)
+    # language switcher points at the equivalent page in each language
+    is_path, en_path, pl_path = PAIR_MAP.get(path, DEFAULT_ALTS)
+    switch = [
+        ("is", "IS", "Íslenska", rel_to(lang, is_path)),
+        ("en", "EN", "English", rel_to(lang, en_path)),
+        ("pl", "PL", "Polski", rel_to(lang, pl_path)),
+    ]
+    lang_items = []
+    for code, txt, name, href in switch:
+        current = ' aria-current="true"' if lang == code else ""
+        cls = "active" if lang == code else ""
+        lang_items.append(
+            f'<a href="{href}" hreflang="{code}" aria-label="{name}"{current} class="{cls}">{txt}</a>'
+        )
+    lang_links = "\n      ".join(lang_items)
     return f"""<header class="site-header">
   <div class="wrap header-inner">
     <a class="brand" href="index.html">
@@ -189,12 +278,11 @@ def render_header(lang, active, asset, path):
         <span class="tagline">{c['tagline']}</span>
       </span>
     </a>
-    <nav class="nav" aria-label="{'Aðalvalmynd' if lang == 'is' else 'Main menu'}">
+    <nav class="nav" aria-label="{NAV_ARIA[lang]}">
       {nav_html}
     </nav>
     <div class="lang">
-      <a href="{is_href}" hreflang="is" aria-label="Íslenska"{' aria-current="true"' if lang == 'is' else ''} class="{'active' if lang=='is' else ''}">IS</a>
-      <a href="{en_href}" hreflang="en" aria-label="English"{' aria-current="true"' if lang == 'en' else ''} class="{'active' if lang=='en' else ''}">EN</a>
+      {lang_links}
     </div>
   </div>
 </header>"""
@@ -213,6 +301,14 @@ def render_footer(lang, asset):
                  ("Tenglar", "tenglar.html")]
         col_h = "Flýtileiðir"; col_c = "Hafa samband"; col_o = "Opnunartími"
         fine = f"© 2026 {c['org']}. Öll réttindi áskilin."
+    elif lang == "pl":
+        quick = [("Ortodoncja", "ortodoncja.html"),
+                 ("Rozszczep wargi i podniebienia", "rozszczep-wargi-i-podniebienia.html"),
+                 ("Umawianie wizyt", "umawianie-wizyt.html"),
+                 ("Ubezpieczenie", "ubezpieczenie.html"),
+                 ("Przydatne linki", "przydatne-linki.html")]
+        col_h = "Szybkie linki"; col_c = "Kontakt"; col_o = "Godziny otwarcia"
+        fine = f"© 2026 {c['org']}. Wszelkie prawa zastrzeżone."
     else:
         quick = [("Orthodontics", "orthodontics.html"),
                  ("Cleft lip and palate", "cleft-lip-and-palate.html"),
@@ -232,7 +328,7 @@ def render_footer(lang, asset):
       <div>
         <h4>{col_c}</h4>
         <p>{c['addr']}</p>
-        <p>Sími / Phone: {tel(c)}</p>
+        <p>{PHONE_LABEL[lang]}: {tel(c)}</p>
         <p><a href="mailto:{c['email']}">{c['email']}</a></p>
       </div>
       <div>
@@ -255,16 +351,19 @@ def page(lang, path, title, body, active="", prehead=True):
     asset = "../assets"
     # normalize any ../assets/ back to assets/, then prefix with the correct asset dir
     body = body.replace("../assets/", "assets/").replace("assets/", f"{asset}/")
-    # decorative emoji icons must not be announced by screen readers
-    body = body.replace('<div class="icon">', '<div class="icon" aria-hidden="true">')
+    # Replace platform-dependent emoji with consistent decorative SVG icons.
+    def replace_icon(match):
+        key = EMOJI_ICONS.get(match.group(1), "sparkles")
+        return f'<div class="icon" aria-hidden="true">{svg_icon(key)}</div>'
+    body = re.sub(r'<div class="icon">([^<]+)</div>', replace_icon, body)
 
     # page title (h1) shares the same .wrap gutter as the rest of the page
     head_txt = f'<div class="wrap page-head"><h1>{title}</h1></div>' if prehead else ""
 
     desc = META_DESC.get(path, f"{c['org']} — {c['tagline']}")
-    is_path, en_path = PAIR_MAP.get(path, ("is/index.html", "en/index.html"))
+    is_path, en_path, pl_path = PAIR_MAP.get(path, DEFAULT_ALTS)
     canonical = f"{SITE_URL}/{path}"
-    skip_txt = "Beint í meginmál" if lang == "is" else "Skip to content"
+    skip_txt = SKIP_TXT[lang]
 
     html_doc = f"""<!DOCTYPE html>
 <html lang="{lang}">
@@ -276,6 +375,7 @@ def page(lang, path, title, body, active="", prehead=True):
 <link rel="canonical" href="{canonical}">
 <link rel="alternate" hreflang="is" href="{SITE_URL}/{is_path}">
 <link rel="alternate" hreflang="en" href="{SITE_URL}/{en_path}">
+<link rel="alternate" hreflang="pl" href="{SITE_URL}/{pl_path}">
 <link rel="alternate" hreflang="x-default" href="{SITE_URL}/{is_path}">
 <link rel="icon" type="image/png" href="{asset}/images/logo.png">
 <link rel="apple-touch-icon" href="{asset}/images/logo.png">
@@ -283,11 +383,11 @@ def page(lang, path, title, body, active="", prehead=True):
 <meta property="og:title" content="{title} — {c['org']}">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="{canonical}">
-<meta property="og:locale" content="{'is_IS' if lang == 'is' else 'en_GB'}">
+<meta property="og:locale" content="{OG_LOCALE[lang]}">
 <meta property="og:image" content="{SITE_URL}/assets/images/hero-office.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{asset}/css/style.css">
 <script type="application/ld+json">
 {json_ld(lang, canonical)}
@@ -310,10 +410,10 @@ def page(lang, path, title, body, active="", prehead=True):
 # ──────────────────────────────────────────────────────
 
 def build():
-    os.makedirs(os.path.join(SITE, "is"), exist_ok=True)
-    os.makedirs(os.path.join(SITE, "en"), exist_ok=True)
+    for _lang in ("is", "en", "pl"):
+        os.makedirs(os.path.join(SITE, _lang), exist_ok=True)
 
-    ci, ce = CONTACT["is"], CONTACT["en"]
+    ci, ce, cp = CONTACT["is"], CONTACT["en"], CONTACT["pl"]
 
     # ============ ICELANDIC ============
     P = {}  # path -> (title, active, body)
@@ -323,10 +423,14 @@ def build():
     <div class="hero-text">
       <h1>Fallegt bros — alla ævi.</h1>
       <p class="lead">Sérfræðistofa í tannréttingum á Laugavegi 163 í Reykjavík. Við sinnum eingöngu tannréttingum barna og fullorðinna, með sérstaka áherslu á skarð í vör og góm.</p>
-      <a class="btn primary" href="hafdu-samband.html">Bóka tíma</a>
+      <div class="hero-actions">
+        <a class="btn primary" href="hafdu-samband.html">Bóka tíma</a>
+        <a class="btn secondary" href="tannrettingar.html">Kynna mér meðferð</a>
+      </div>
     </div>
     <div class="hero-img">
       <img src="assets/images/hero-office.jpg" alt="Stofan">
+      <div class="hero-badge"><strong>Sérfræðistofa í tannréttingum</strong><span>Börn · unglingar · fullorðnir</span></div>
     </div>
   </div>
 </section>"""
@@ -339,12 +443,23 @@ def build():
       <div class="kicker">Verkefni okkar</div>
       <h2>Vandaðar tannréttingar fyrir alla aldurshópa</h2>
     </div>
-    <div class="cards">
+    <div class="cards bento-grid">
       <div class="card"><div class="icon">🦷</div><h3>Tannréttingar barna og unglinga</h3><p>Frá fyrstu skoðun um 4–6 ára aldri og í gegnum allt tannskiptaferlið.</p></div>
       <div class="card"><div class="icon">💛</div><h3>Skarð í vör og góm</h3><p>Margra ára reynsla af tannréttingu barna með skarð í vör og góm, í samvinnu við sérfræðiteymi.</p></div>
       <div class="card"><div class="icon">✨</div><h3>Tannréttingar fullorðinna</h3><p>Mögulegt er að rétta tennur á öllum aldri. Við metum hvert tilvik sérstaklega.</p></div>
       <div class="card"><div class="icon">🛡️</div><h3>Eftirfylgd og stoðtæki</h3><p>Við fylgjum meðferð eftir með stoðtækjum til að tryggja varanlegan árangur.</p></div>
     </div>
+  </div>
+</section>
+<section class="section journey-section" aria-labelledby="journey-is">
+  <div class="wrap">
+    <div class="section-head"><div class="kicker">Meðferðarferlið</div><h2 id="journey-is">Skýr leið frá fyrstu skoðun að varanlegum árangri</h2></div>
+    <ol class="journey">
+      <li><span class="step-number">01</span><h3>Fyrsta skoðun</h3><p>Við metum þarfir og réttan tíma til að hefja meðferð.</p></li>
+      <li><span class="step-number">02</span><h3>Meðferðaráætlun</h3><p>Markmið og næstu skref eru útskýrð á skýran hátt.</p></li>
+      <li><span class="step-number">03</span><h3>Meðferð og eftirfylgd</h3><p>Vönduð meðferð og stoðtæki styðja varanlegan árangur.</p></li>
+    </ol>
+    <div class="journey-cta"><p>Tilbúin að taka fyrsta skrefið?</p><a class="btn primary" href="hafdu-samband.html">Bóka fyrstu skoðun</a></div>
   </div>
 </section>
 <section class="section alt">
@@ -574,10 +689,14 @@ def build():
     <div class="hero-text">
       <h1>A beautiful smile — for life.</h1>
       <p class="lead">An orthodontic specialist practice at Laugavegur 163, Reykjavík. We focus exclusively on orthodontics for children and adults, with special expertise in cleft lip and palate.</p>
-      <a class="btn primary" href="contact.html">Book an appointment</a>
+      <div class="hero-actions">
+        <a class="btn primary" href="contact.html">Book an appointment</a>
+        <a class="btn secondary" href="orthodontics.html">Explore treatment</a>
+      </div>
     </div>
     <div class="hero-img">
       <img src="../assets/images/hero-office.jpg" alt="The practice">
+      <div class="hero-badge"><strong>Orthodontic specialist practice</strong><span>Children · teens · adults</span></div>
     </div>
   </div>
 </section>"""
@@ -587,12 +706,23 @@ def build():
 <section class="section">
   <div class="wrap">
     <div class="section-head"><div class="kicker">What we do</div><h2>Quality orthodontics for all ages</h2></div>
-    <div class="cards">
+    <div class="cards bento-grid">
       <div class="card"><div class="icon">🦷</div><h3>Children &amp; teens</h3><p>From the first visit at age 4–6 through the full eruption of adult teeth.</p></div>
       <div class="card"><div class="icon">💛</div><h3>Cleft lip and palate</h3><p>Years of experience treating children with cleft lip and palate, together with a specialist team.</p></div>
       <div class="card"><div class="icon">✨</div><h3>Adult orthodontics</h3><p>It is possible to straighten teeth at any age. Every case is assessed individually.</p></div>
       <div class="card"><div class="icon">🛡️</div><h3>Retainers &amp; follow-up</h3><p>We complete treatment with retainers to ensure long-lasting results.</p></div>
     </div>
+  </div>
+</section>
+<section class="section journey-section" aria-labelledby="journey-en">
+  <div class="wrap">
+    <div class="section-head"><div class="kicker">Your treatment journey</div><h2 id="journey-en">A clear path from first visit to lasting results</h2></div>
+    <ol class="journey">
+      <li><span class="step-number">01</span><h3>First visit</h3><p>We assess your needs and the right time to begin treatment.</p></li>
+      <li><span class="step-number">02</span><h3>Treatment plan</h3><p>Your goals and next steps are explained clearly.</p></li>
+      <li><span class="step-number">03</span><h3>Treatment &amp; follow-up</h3><p>Careful treatment and retainers support lasting results.</p></li>
+    </ol>
+    <div class="journey-cta"><p>Ready to take the first step?</p><a class="btn primary" href="contact.html">Book a first visit</a></div>
   </div>
 </section>
 <section class="section alt">
@@ -782,16 +912,263 @@ def build():
   </ul>
 </div></div>""")
 
+    # ============ POLISH ============
+    PL = {}
+
+    hero_pl = f"""<section class="hero">
+  <div class="wrap">
+    <div class="hero-text">
+      <h1>Piękny uśmiech — na całe życie.</h1>
+      <p class="lead">Specjalistyczny gabinet ortodontyczny przy Laugavegur 163 w Reykjavíku. Zajmujemy się wyłącznie ortodoncją dzieci i dorosłych, ze szczególnym doświadczeniem w leczeniu rozszczepu wargi i podniebienia.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="kontakt.html">Umów wizytę</a>
+        <a class="btn secondary" href="ortodoncja.html">Poznaj leczenie</a>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="assets/images/hero-office.jpg" alt="Gabinet">
+      <div class="hero-badge"><strong>Specjalistyczny gabinet ortodontyczny</strong><span>Dzieci · młodzież · dorośli</span></div>
+    </div>
+  </div>
+</section>"""
+
+    PL["pl/index.html"] = ("Strona główna", "index",
+        f"""{hero_pl}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">Czym się zajmujemy</div>
+      <h2>Dobra ortodoncja dla każdego wieku</h2>
+    </div>
+    <div class="cards bento-grid">
+      <div class="card"><div class="icon">🦷</div><h3>Dzieci i młodzież</h3><p>Od pierwszej wizyty w wieku 4–6 lat aż do pełnego wyrznięcia zębów stałych.</p></div>
+      <div class="card"><div class="icon">💛</div><h3>Rozszczep wargi i podniebienia</h3><p>Wieloletnie doświadczenie w leczeniu dzieci z rozszczepem wargi i podniebienia, we współpracy z zespołem specjalistów.</p></div>
+      <div class="card"><div class="icon">✨</div><h3>Ortodoncja dorosłych</h3><p>Zęby można prostować w każdym wieku. Każdy przypadek oceniamy indywidualnie.</p></div>
+      <div class="card"><div class="icon">🛡️</div><h3>Aparaty retencyjne i kontrola</h3><p>Leczenie kończymy założeniem aparatów retencyjnych, aby zapewnić trwały efekt.</p></div>
+    </div>
+  </div>
+</section>
+<section class="section journey-section" aria-labelledby="journey-pl">
+  <div class="wrap">
+    <div class="section-head"><div class="kicker">Przebieg leczenia</div><h2 id="journey-pl">Jasna droga od pierwszej wizyty do trwałego efektu</h2></div>
+    <ol class="journey">
+      <li><span class="step-number">01</span><h3>Pierwsza wizyta</h3><p>Oceniamy potrzeby i właściwy moment rozpoczęcia leczenia.</p></li>
+      <li><span class="step-number">02</span><h3>Plan leczenia</h3><p>Jasno wyjaśniamy cele i kolejne etapy.</p></li>
+      <li><span class="step-number">03</span><h3>Leczenie i kontrola</h3><p>Staranna opieka i aparaty retencyjne wspierają trwały efekt.</p></li>
+    </ol>
+    <div class="journey-cta"><p>Gotowi na pierwszy krok?</p><a class="btn primary" href="kontakt.html">Umów pierwszą wizytę</a></div>
+  </div>
+</section>
+<section class="section alt">
+  <div class="wrap">
+    <div class="section-head"><div class="kicker">Godziny otwarcia</div><h2>Otwarte od poniedziałku do piątku</h2></div>
+    <div class="info-grid">
+      <div class="info-item"><div class="icon">📅</div><div><div class="label">Sezon zimowy (wrzesień–maj)</div><div class="value">8:15–16:00</div></div></div>
+      <div class="info-item"><div class="icon">☀️</div><div><div class="label">Sezon letni (czerwiec–sierpień)</div><div class="value">8:15–16:00, w piątki do 12:00</div></div></div>
+      <div class="info-item"><div class="icon">📞</div><div><div class="label">Telefon</div><div class="value">{tel(cp)}</div></div></div>
+      <div class="info-item"><div class="icon">📍</div><div><div class="label">Lokalizacja</div><div class="value">Laugavegur 163, 105 Reykjavík</div></div></div>
+    </div>
+  </div>
+</section>""")
+
+    PL["pl/ortodoncja.html"] = ("Ortodoncja", "ortodoncja",
+        """<div class="wrap section"><div class="prose" style="max-width:none">
+  <p class="lead" style="font-size:1.15rem">Zajmujemy się wyłącznie ortodoncją, nieprzerwanie od 1986 roku. Poniżej znajdą Państwo informacje o najważniejszych elementach leczenia.</p>
+  <div class="cards" style="margin-top:24px">
+    <a class="card" href="pierwsza-wizyta.html"><h3>Pierwsza wizyta</h3><p>Kiedy i jak rozpoczyna się leczenie.</p></a>
+    <a class="card" href="rozszczep-wargi-i-podniebienia.html"><h3>Rozszczep wargi i podniebienia</h3><p>Specjalistyczna ścieżka leczenia dzieci.</p></a>
+    <a class="card" href="ortodoncja-dla-wszystkich.html"><h3>Ortodoncja dla wszystkich</h3><p>Broszura i informacje ogólne.</p></a>
+    <a class="card" href="aparaty-retencyjne.html"><h3>Aparaty retencyjne</h3><p>Kontrola po zakończeniu leczenia.</p></a>
+    <a class="card" href="pierwsza-pomoc.html"><h3>Pierwsza pomoc</h3><p>Sytuacje nagłe i pomoc.</p></a>
+    <a class="card" href="zywnosc-ktorej-nalezy-unikac.html"><h3>Żywność, której należy unikać</h3><p>Co jest bezpieczne przy aparacie.</p></a>
+    <a class="card" href="bol.html"><h3>Leczenie bólu</h3><p>Wskazówki dotyczące łagodzenia dolegliwości.</p></a>
+    <a class="card" href="ubezpieczenie.html"><h3>Ubezpieczenie</h3><p>Udział Islandzkiego Ubezpieczenia Zdrowotnego.</p></a>
+  </div>
+</div></div>""")
+
+    PL["pl/pierwsza-wizyta.html"] = ("Pierwsza wizyta", "ortodoncja",
+        f"""<div class="wrap section"><div class="prose">
+  <p>Zalecamy przyprowadzenie dziecka na wczesną pierwszą wizytę u specjalisty ortodonty — najlepiej w wieku około 4–6 lat. Pozwala to ocenić, czy i kiedy potrzebne jest leczenie ortodontyczne, oraz zaplanować je we właściwym czasie.</p>
+  <p>Leczenie zwykle rozpoczyna się w okresie uzębienia mieszanego, około 7–8 roku życia. Pierwsze badanie jest bezpłatne.</p>
+  <div class="callout">Aby umówić pierwszą wizytę, prosimy zadzwonić pod numer <strong>{tel(cp)}</strong> lub napisać na adres <a href="mailto:teinar@teinar.is">teinar@teinar.is</a>.</div>
+</div></div>""")
+
+    PL["pl/rozszczep-wargi-i-podniebienia.html"] = ("Rozszczep wargi i podniebienia", "ortodoncja",
+        """<div class="wrap section"><div class="prose">
+  <p>Leczyliśmy wiele dzieci z rozszczepem wargi i podniebienia. Poniżej przedstawiamy ogólne informacje o ich leczeniu ortodontycznym. Na dole strony znajduje się link do <em>Breið bros</em> — islandzkiego stowarzyszenia rodzin dzieci z rozszczepem wargi i podniebienia.</p>
+
+  <h2>Ortodoncja u dzieci z rozszczepem wargi i podniebienia</h2>
+  <p>Rodzice dzieci urodzonych z rozszczepem podniebienia lub rozszczepem wargi i podniebienia szybko przekonują się, że ich dziecko wymaga opieki dużego zespołu specjalistów przez całe dzieciństwo. Specjaliści ortodonci to lekarze dentyści z zaawansowanym szkoleniem w leczeniu wad zębowych i zgryzowych; odgrywają oni ważną rolę w tym zespole.</p>
+  <p>Rozszczepowi wyrostka zębodołowego lub podniebienia zwykle towarzyszą wady zębowe i zgryzowe będące bezpośrednim następstwem tej wrodzonej wady — na przykład przodozgryz spowodowany niedostatecznym wzrostem szczęki ku przodowi albo zgryz krzyżowy. Często zaburzony jest również rozwój zawiązków zębów w pobliżu rozszczepu.</p>
+  <p>Dzieci urodzone z rozszczepem podniebienia lub rozszczepem wargi i podniebienia mają zatem dużą potrzebę leczenia ortodontycznego. Leczenie i obserwacja zwykle rozpoczynają się we wczesnym wieku i nie kończą się, dopóki nie zakończy się wymiana uzębienia oraz wzrost.</p>
+
+  <h2>Leczenie w okresie uzębienia mieszanego</h2>
+  <p>Korekta wad zębowych zwykle rozpoczyna się około 7–8 roku życia, ale zaleca się wcześniejsze badanie dziecka, np. w wieku 4–6 lat. Gdy dziecko ma 6–8 lat, wyrzynają się pierwsze stałe siekacze; są one zazwyczaj obrócone i nieprawidłowo ustawione, dlatego trzeba wprowadzić je na właściwe miejsce. Robi się to za pomocą płytek zdejmowanych lub aparatów stałych (przyklejanych). Jednocześnie często rozpoczynamy poszerzanie łuków bocznych w celu korekty zgryzu krzyżowego.</p>
+
+  <h2>Leczenie po wyrznięciu zębów stałych</h2>
+  <p>Jeśli po pierwszym etapie nastąpiła przerwa, kolejny etap zwykle rozpoczyna się w wieku 12–14 lat, gdy wyrzną się wszystkie zęby stałe. To leczenie wykorzystuje aparaty stałe i ma na celu pełną korektę zębów oraz zgryzu. Jeśli występuje duża rozbieżność we wzroście szczęk, może być konieczne chirurgiczne przemieszczenie szczęk — takie zabiegi wykonują chirurdzy plastyczni oraz chirurdzy szczękowo-twarzowi.</p>
+
+  <h2>Współpraca</h2>
+  <p>Leczenie ortodontyczne może trwać długo. Dlatego ważne jest, aby dzieci i rodzice byli cierpliwi i sumiennie dążyli do celu — efekt bywa niezwykły, gdy współpraca układa się dobrze.</p>
+
+  <h2>Linki</h2>
+  <p>Breið bros — stowarzyszenie rodzin dzieci z rozszczepem wargi i podniebienia: <a href="https://www.facebook.com/groups/breidbros/">www.facebook.com/groups/breidbros</a></p>
+</div></div>""")
+
+    PL["pl/ortodoncja-dla-wszystkich.html"] = ("Ortodoncja dla wszystkich", "ortodoncja",
+        """<div class="wrap section"><div class="prose">
+  <p>Ortodoncja może przynieść korzyść osobom w każdym wieku. Poniższa broszura opisuje leczenie oraz stosowane aparaty.</p>
+  <h2>Droga do pięknego uśmiechu</h2>
+  <p>Broszura obejmująca przygotowanie do leczenia ortodontycznego, samo leczenie i stosowane aparaty, a także kryteria decyzji o rozpoczęciu leczenia.</p>
+  <div class="callout"><a href="assets/docs/tannrettingar-fyrir-alla.pdf">Pobierz broszurę (PDF, 10,8&nbsp;MB, w języku islandzkim)</a></div>
+</div></div>""")
+
+    PL["pl/aparaty-retencyjne.html"] = ("Aparaty retencyjne", "ortodoncja",
+        """<div class="wrap section"><div class="prose">
+  <p>Na koniec leczenia w obu łukach zębowych zakłada się aparaty retencyjne, aby utrzymać osiągnięty efekt.</p>
+  <ul>
+    <li><strong>Retainer górny</strong> — przyklejony od wewnętrznej strony zębów, od kła do kła. Zalecamy jego utrzymanie przez około 15 lat.</li>
+    <li><strong>Dolny drut retencyjny</strong> — przyklejony do kłów. Zalecamy, aby nigdy go nie usuwać.</li>
+  </ul>
+</div></div>""")
+
+    PL["pl/pierwsza-pomoc.html"] = ("Pierwsza pomoc", "ortodoncja",
+        f"""<div class="wrap section"><div class="prose">
+  <p>W nagłych przypadkach można skontaktować się z Gíslim telefonicznie pod numerem <strong>{tel_emergency(cp)}</strong>.</p>
+  <p>Gdy Gísli jest na urlopie, staramy się zapewnić dostępność innego specjalisty ortodonty. Informacje na ten temat można uzyskać u nas.</p>
+</div></div>""")
+
+    foods_pl = [
+        ("🍎", "Jabłka", "lepiej pokroić na kawałki"),
+        ("🥕", "Marchew", "zetrzeć lub pokroić bardzo drobno"),
+        ("🌽", "Kukurydza w kolbie", "zeskrobać z kolby, nie odgryzać"),
+        ("🧊", "Kostki lodu", "nie rozgryzać"),
+        ("🍬", "Twarde cukierki i lizaki", "na liście zakazanych"),
+        ("🍿", "Popcorn", "łupiny dostają się pod dziąsła"),
+        ("🍬", "Guma do żucia z cukrem", "przykleja się do aparatu"),
+        ("🐟", "Suszona ryba", "może złamać aparat"),
+    ]
+    food_cards_pl = "\n".join(f'<div class="card"><div class="icon">{i}</div><h3>{n}</h3><p>{d}</p></div>' for i, n, d in foods_pl)
+    PL["pl/zywnosc-ktorej-nalezy-unikac.html"] = ("Żywność, której należy unikać", "ortodoncja",
+        f"""<div class="wrap section"><div class="prose" style="max-width:none">
+  <p>W większości przypadków sami Państwo wiedzą, czego unikać: wszystkiego, co twarde lub ciągnące się i może uszkodzić aparat.</p>
+  <div class="cards" style="margin:20px 0">{food_cards_pl}</div>
+  <p>Należy również unikać obgryzania paznokci, ołówków i długopisów.</p>
+</div></div>""")
+
+    PL["pl/bol.html"] = ("Leczenie bólu", "ortodoncja",
+        """<div class="wrap section"><div class="prose">
+  <p>Odczuwanie bólu jest bardzo indywidualne. Zalecamy, aby każdy spodziewał się pewnego dyskomfortu po założeniu aparatu stałego, ale wielu naszych pacjentów mówi potem, że nie było tak źle, jak się obawiali.</p>
+  <p>W większości przypadków wystarczający jest łagodny lek przeciwbólowy, taki jak <strong>paracetamol</strong> (Panodil lub Paratabs).</p>
+  <h2>Nasze zalecenie</h2>
+  <p>Badania wykazały, że lek zawierający <strong>ibuprofen</strong> (Ibufen, Ibumetin, Nurofen) jest znacznie skuteczniejszy w łagodzeniu bólu ortodontycznego i obecnie go zalecamy. Opakowania 20 tabletek po 200 mg są dostępne bez recepty.</p>
+  <p>Dawkowanie u dzieci według charakterystyki produktu leczniczego wynosi 20 mg/kg masy ciała na dobę, podawane w 3–4 równych dawkach. Jeśli dziecko waży mniej niż 30 kg, nie należy podawać więcej niż 500 mg na dobę.</p>
+  <p>Na opakowaniu leku widnieje informacja, że nie należy podawać go dzieciom poniżej 12. roku życia. Jeśli jednak przestrzega się dawek zależnych od masy ciała, podawanie leku dzieciom jest dopuszczalne.</p>
+  <p>Pacjentom, którzy obawiają się wizyt z powodu bólu, zalecamy przyjęcie jednej tabletki 200 mg na godzinę przed wizytą, a następnie w razie potrzeby po niej.</p>
+  <h2>Przykładowa dawka dobowa</h2>
+  <table>
+    <tr><th>Masa ciała dziecka</th><th>Dawka maksymalna na dobę</th></tr>
+    <tr><td>30 kg</td><td>600 mg (3 × 200 mg)</td></tr>
+    <tr><td>40 kg</td><td>800 mg (4 × 200 mg)</td></tr>
+    <tr><td>50 kg</td><td>1000 mg (5 × 200 mg)</td></tr>
+    <tr><td>60 kg</td><td>1200 mg (6 × 200 mg)</td></tr>
+  </table>
+  <div class="callout warn"><strong>Uwaga:</strong> są to dawki maksymalne i dziecko być może nie potrzebuje aż tyle. Ponieważ ryzyko działań niepożądanych rośnie wraz z dawką, należy starać się stosować jak najmniej. Nie należy przyjmować leku na czczo i trzeba popić szklanką wody. Jeśli dziecko przyjmuje inne leki, przed podaniem należy skonsultować się z lekarzem.</div>
+  <h2>Działania niepożądane i przeciwwskazania</h2>
+  <p>U pojedynczych pacjentów mogą wystąpić reakcje alergiczne. Osoby, u których takie reakcje wystąpiły po kwasie acetylosalicylowym (Magnyl) lub paracetamolu, powinny unikać tego leku. Mogą wystąpić dolegliwości żołądkowe; astma może się nasilić, opisywano też zawroty i bóle głowy. Lek nie jest przeznaczony dla kobiet w ciąży, chyba że na zalecenie lekarza, i może nasilać działanie innych leków, takich jak leki przeciwzakrzepowe i przeciwpadaczkowe.</p>
+</div></div>""")
+
+    PL["pl/o-nas.html"] = ("O nas", "o-nas",
+        """<div class="wrap section"><div class="prose">
+  <img src="assets/images/team.jpg" alt="Zespół" style="border-radius:14px;margin-bottom:20px">
+  <p>Gabinet otwarto przy Laugavegur w sierpniu 1986 roku. Gísli jest jedynym lekarzem dentystą w gabinecie, a oprócz niego pracują u nas czterej asystenci ortodontyczni, recepcjonistka oraz technik dentystyczny. Zajmujemy się wyłącznie ortodoncją.</p>
+  <p>Staramy się zapewniać staranną i indywidualną obsługę oraz sprawić, aby wizyty były jak najbardziej komfortowe. Dużą wagę przywiązujemy do edukacji i informowania zarówno pacjentów, jak i rodziców, aby wszyscy mogli śledzić przebieg leczenia.</p>
+  <p>Dobre leczenie ortodontyczne wymaga czasu i precyzji oraz jest znaczącą inwestycją. Wszyscy wkładamy w leczenie wiele wysiłku i dążymy do najlepszego możliwego wyniku. Naszym celem jest, aby efekt leczenia był trwały i cieszył przez całe życie.</p>
+  <p>Rodzice są zawsze mile widziani przy swoich dzieciach, niezależnie od tego, czy wolą poczekać w poczekalni, czy wejść do gabinetu zabiegowego. Dla rodziców, którzy nie mogą towarzyszyć dziecku, na końcu każdej wizyty sporządzamy notatkę w dokumentacji pacjenta.</p>
+</div></div>""")
+
+    staff_pl = [
+        ("gisli", "Gísli Vilhjálmsson", "Lekarz dentysta, specjalista ortodonta"),
+        ("agnes", "Agnes Hilmarsdóttir", "Technik dentystyczny"),
+        ("katrin", "Katrín Sigurðardóttir", "Asystentka ortodontyczna"),
+        ("ragnheidur", "Ragnheiður Valdimarsdóttir", "Asystentka ortodontyczna"),
+        ("thora", "Þóra Jóhannesdóttir", "Asystentka ortodontyczna"),
+        ("ingibjorg", "Ingibjörg Jóna Hallgrímsdóttir", "Asystentka ortodontyczna"),
+    ]
+    staff_cards_pl = "\n".join(
+        f'<div class="staff-card">{staff_media(k, n)}<div class="pname">{n}</div><div class="ptitle">{t}</div></div>'
+        for k, n, t in staff_pl
+    )
+    PL["pl/zespol.html"] = ("Zespół", "zespol",
+        f"""<div class="wrap section">
+  <div class="section-head"><div class="kicker">Zespół</div><h2>Nasi ludzie</h2></div>
+  <div class="staff-grid">{staff_cards_pl}</div>
+  <p style="margin-top:28px;color:var(--muted)">W gabinecie pracuje również recepcjonistka. <a href="gisli-vilhjalmsson.html">Więcej o Gíslim</a>.</p>
+</div>""")
+
+    PL["pl/gisli-vilhjalmsson.html"] = ("Gísli Vilhjálmsson", "zespol",
+        """<div class="wrap section"><div class="prose">
+  <p>Gísli Vilhjálmsson urodził się 13 maja 1954 roku w Reykjavíku. W 1974 roku ukończył liceum M.H. (Menntaskólinn í Hamrahlíð), a w 1980 roku uzyskał dyplom lekarza dentysty (Cand.odont.) na Uniwersytecie Islandzkim.</p>
+  <p>Gísli od razu wyjechał na studia podyplomowe do Stanów Zjednoczonych, gdzie studiował ortodoncję na St. Louis University. W 1982 roku ukończył studia magisterskie (M.Sc.) z ortodoncji i otrzymał nagrodę Marshalls Award przyznawaną przez St. Louis University Orthodontic Alumni Association za najlepsze wyniki w dwuletnim programie podyplomowym z ortodoncji.</p>
+  <p>Gísli uzyskał prawo wykonywania zawodu lekarza dentysty 27 sierpnia 1980 roku, a uprawnienia specjalisty ortodonty 16 czerwca 1988 roku. Aktywnie się dokształca i regularnie uczestniczy w kongresach ortodontycznych za granicą.</p>
+  <p>Gísli jest żonaty z Kristín Jónsdóttir; mają troje dzieci. Kristín prowadzi księgowość gabinetu i pomaga również w recepcji.</p>
+</div></div>""")
+
+    PL["pl/lokalizacja.html"] = ("Lokalizacja", "lokalizacja",
+        """<div class="wrap section"><div class="prose">
+  <p>Gabinet mieści się przy <strong>Laugavegur 163, 105 Reykjavík</strong>. Wejście znajduje się na parterze, przez osobne wejście od strony Katrínartún; następnie schodami na 2. piętro, po prawej stronie.</p>
+  <img src="assets/images/husid.jpg" alt="Budynek przy Laugavegur 163" style="border-radius:14px;margin:20px 0">
+  <p><a class="btn primary" href="https://ja.is/kort/?q=G%C3%ADsli+Vilhj%C3%A1lmsson%2C+Laugavegi+163" target="_blank" rel="noopener noreferrer">Zobacz na mapie (Já.is)</a></p>
+</div></div>""")
+
+    PL["pl/umawianie-wizyt.html"] = ("Umawianie wizyt", "kontakt",
+        f"""<div class="wrap section"><div class="prose">
+  <p>Wizyty można umawiać i zmieniać telefonicznie pod numerem <strong>{tel(cp)}</strong>.</p>
+  <p>Można również napisać na adres <a href="mailto:teinar@teinar.is">teinar@teinar.is</a>.</p>
+  <h2>Godziny otwarcia</h2>
+  <table>
+    <tr><th>Sezon zimowy (wrzesień–maj)</th><td>8:15–16:00</td></tr>
+    <tr><th>Sezon letni (czerwiec–sierpień)</th><td>8:15–16:00 (w piątki do 12:00)</td></tr>
+  </table>
+</div></div>""")
+
+    PL["pl/kontakt.html"] = ("Kontakt", "kontakt",
+        f"""<div class="wrap section"><div class="prose">
+  <p>Prosimy o kontakt w razie pytań dotyczących ortodoncji lub chęci umówienia wizyty.</p>
+  <div class="info-grid" style="margin-top:20px">
+    <div class="info-item"><div class="icon">📞</div><div><div class="label">Telefon</div><div class="value">{tel(cp)}</div></div></div>
+    <div class="info-item"><div class="icon">✉️</div><div><div class="label">E-mail</div><div class="value"><a href="mailto:teinar@teinar.is">teinar@teinar.is</a></div></div></div>
+    <div class="info-item"><div class="icon">📍</div><div><div class="label">Adres</div><div class="value">Laugavegur 163, 105 Reykjavík, Islandia</div></div></div>
+    <div class="info-item"><div class="icon">🚨</div><div><div class="label">Telefon alarmowy</div><div class="value">{tel_emergency(cp)} (Gísli)</div></div></div>
+  </div>
+</div></div>""")
+
+    PL["pl/ubezpieczenie.html"] = ("Ubezpieczenie", "ortodoncja",
+        """<div class="wrap section"><div class="prose">
+  <p>Pomagamy naszym pacjentom w składaniu wniosków do Islandzkiego Ubezpieczenia Zdrowotnego (Sjúkratryggingar Íslands).</p>
+  <p>Więcej informacji o udziale Islandzkiego Ubezpieczenia Zdrowotnego w leczeniu ortodontycznym można znaleźć na jego stronie internetowej:</p>
+  <p><a href="https://island.is/en/dentistry/orthodontics">island.is/en/dentistry/orthodontics</a></p>
+  <p><a href="https://www.sjukra.is/">www.sjukra.is</a></p>
+</div></div>""")
+
+    PL["pl/przydatne-linki.html"] = ("Przydatne linki", "ortodoncja",
+        """<div class="wrap section"><div class="prose">
+  <ul>
+    <li><strong>Breið bros</strong> — stowarzyszenie rodzin dzieci z rozszczepem wargi i podniebienia: <a href="https://www.facebook.com/groups/breidbros/">www.facebook.com/groups/breidbros</a></li>
+    <li><strong>Islandzkie Ubezpieczenie Zdrowotne</strong>: <a href="https://www.sjukra.is/">www.sjukra.is</a></li>
+  </ul>
+</div></div>""")
+
     # copy static assets (css, images, docs) into the deployable site/ folder
     shutil.copytree(ASSETS, os.path.join(SITE, "assets"), dirs_exist_ok=True)
 
     # write all pages
     count = 0
-    all_pages = {**P, **E}
+    all_pages = {**P, **E, **PL}
     for path, (title, active, body) in all_pages.items():
         lang = path.split("/")[0]
         # home pages embed their own hero in `body`, so suppress the h1 there
-        is_home = path in ("is/index.html", "en/index.html")
+        is_home = path in ("is/index.html", "en/index.html", "pl/index.html")
         rendered = page(lang, path, title, body, active=active, prehead=not is_home)
         out = os.path.join(SITE, path)
         with open(out, "w", encoding="utf-8") as fh:
@@ -807,11 +1184,12 @@ def build():
 <link rel="canonical" href="https://www.teinar.is/is/index.html">
 <link rel="alternate" hreflang="is" href="https://www.teinar.is/is/index.html">
 <link rel="alternate" hreflang="en" href="https://www.teinar.is/en/index.html">
+<link rel="alternate" hreflang="pl" href="https://www.teinar.is/pl/index.html">
 <link rel="alternate" hreflang="x-default" href="https://www.teinar.is/is/index.html">
 <title>Teinar — Tannlæknastofa Gísla Vilhjálmssonar</title>
 </head>
 <body>
-<p><a href="is/index.html">Íslenska →</a> &nbsp; <a href="en/index.html">English →</a></p>
+<p><a href="is/index.html">Íslenska →</a> &nbsp; <a href="en/index.html">English →</a> &nbsp; <a href="pl/index.html">Polski →</a></p>
 </body>
 </html>"""
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as fh:
